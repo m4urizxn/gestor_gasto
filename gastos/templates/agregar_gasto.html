@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Gasto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen py-10 px-4">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Agregar Gasto</h1>
+        
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <form method="POST" class="space-y-6">
+                {% csrf_token %}
+                
+                <!-- Persona -->
+                <div>
+                    <label for="persona" class="block text-gray-700 font-semibold mb-2">¿A quién agregarás el gasto?</label>
+                    <select name="persona" id="persona" required
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                        <option value="">Selecciona una persona</option>
+                        <option value="mama">Mamá</option>
+                        <option value="mauricio">Mauricio</option>
+                        <option value="papa">Papá</option>
+                    </select>
+                </div>
+                
+                <!-- Descripción del gasto -->
+                <div>
+                    <label for="descripcion" class="block text-gray-700 font-semibold mb-2">¿Qué es el gasto?</label>
+                    <input type="text" name="descripcion" id="descripcion" required
+                        placeholder="Ej: Comida, Luz, Internet..."
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                
+                <!-- Monto -->
+                <div>
+                    <label for="monto" class="block text-gray-700 font-semibold mb-2">Monto (S/)</label>
+                    <input type="number" name="monto" id="monto" required step="0.01" min="0"
+                        placeholder="0.00"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                
+                <!-- Nota -->
+                <div>
+                    <label for="nota" class="block text-gray-700 font-semibold mb-2">¿Por qué agregas este gasto? <span class="text-gray-400 font-normal">(opcional)</span></label>
+                    <textarea name="nota" id="nota" rows="2"
+                        placeholder="Ej: Para pagar el cabello, préstamo de..."
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></textarea>
+                </div>
+                
+                <!-- Botones -->
+                <div class="flex gap-4 pt-4">
+                    <a href="{% url 'gastos' %}" 
+                        class="flex-1 text-center bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition">
+                        Cancelar
+                    </a>
+                    <button type="submit" 
+                        class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

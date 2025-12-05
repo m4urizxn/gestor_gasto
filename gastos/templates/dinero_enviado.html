@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dinero Enviado</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen py-10 px-4">
+    <div class="max-w-5xl mx-auto">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-4">Dinero Enviado</h1>
+        
+        <!-- Tasa de cambio -->
+        <div class="text-center text-gray-500 text-sm mb-4">
+            Tasa de cambio actual: 1 EUR = S/ {{ tasa_cambio|floatformat:4 }}
+        </div>
+        
+        <!-- Botones -->
+        <div class="text-center mb-8 flex justify-center gap-4">
+            <a href="{% url 'agregar_envio' %}" class="inline-block bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition">
+                + Dinero a Enviar
+            </a>
+            <a href="{% url 'vaciar_historial' %}" class="inline-block bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md transition">
+                🗑️ Vaciar Historial
+            </a>
+        </div>
+        
+        <!-- Resumen de lo que falta por cubrir -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <!-- Mamá -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-pink-600 mb-4 text-center">Mamá</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Gastos totales:</span>
+                        <span class="font-medium">S/ {{ gastos_mama|floatformat:2 }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Total enviado:</span>
+                        <span class="font-medium text-green-600">S/ {{ enviado_mama_soles|floatformat:2 }}</span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="flex justify-between text-lg">
+                        <span class="font-semibold text-gray-700">Falta por cubrir:</span>
+                        <div class="text-right">
+                            {% if restante_mama_soles > 0 %}
+                            <span class="font-bold text-red-600">S/ {{ restante_mama_soles|floatformat:2 }}</span>
+                            <span class="text-gray-500 text-sm block">(€ {{ restante_mama_euros|floatformat:2 }})</span>
+                            {% else %}
+                            <span class="font-bold text-green-600">✓ Cubierto</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mauricio -->
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-blue-600 mb-4 text-center">Mauricio</h3>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Gastos totales:</span>
+                        <span class="font-medium">S/ {{ gastos_mauricio|floatformat:2 }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Total enviado:</span>
+                        <span class="font-medium text-green-600">S/ {{ enviado_mauricio_soles|floatformat:2 }}</span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="flex justify-between text-lg">
+                        <span class="font-semibold text-gray-700">Falta por cubrir:</span>
+                        <div class="text-right">
+                            {% if restante_mauricio_soles > 0 %}
+                            <span class="font-bold text-red-600">S/ {{ restante_mauricio_soles|floatformat:2 }}</span>
+                            <span class="text-gray-500 text-sm block">(€ {{ restante_mauricio_euros|floatformat:2 }})</span>
+                            {% else %}
+                            <span class="font-bold text-green-600">✓ Cubierto</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabla de envíos -->
+        <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-8">
+            <div class="bg-purple-500 text-white py-4 px-6">
+                <h2 class="text-xl font-semibold text-center">Historial de Envíos</h2>
+            </div>
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="py-3 px-4 text-left text-gray-600 font-semibold">Destino</th>
+                        <th class="py-3 px-4 text-right text-gray-600 font-semibold">Monto (€)</th>
+                        <th class="py-3 px-4 text-right text-gray-600 font-semibold">Monto (S/)</th>
+                        <th class="py-3 px-4 text-right text-gray-600 font-semibold">Tasa</th>
+                        <th class="py-3 px-4 text-right text-gray-600 font-semibold">Fecha</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    {% for envio in envios %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="py-3 px-4 text-gray-700">{{ envio.get_destino_display }}</td>
+                        <td class="py-3 px-4 text-right text-gray-800 font-medium">€ {{ envio.monto_euros|floatformat:2 }}</td>
+                        <td class="py-3 px-4 text-right text-gray-800 font-medium">S/ {{ envio.monto_soles|floatformat:2 }}</td>
+                        <td class="py-3 px-4 text-right text-gray-500 text-sm">{{ envio.tasa_cambio|floatformat:4 }}</td>
+                        <td class="py-3 px-4 text-right text-gray-500 text-sm">{{ envio.fecha|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td class="py-8 px-4 text-gray-400 text-center italic" colspan="5">No hay envíos registrados</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="bg-purple-50">
+                        <td class="py-4 px-4 text-purple-700 font-bold text-lg">Total Enviado</td>
+                        <td class="py-4 px-4 text-right text-purple-700 font-bold">€ {{ total_euros|floatformat:2 }}</td>
+                        <td class="py-4 px-4 text-right text-purple-700 font-bold">S/ {{ total_soles|floatformat:2 }}</td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        
+        <!-- Botón volver -->
+        <div class="text-center">
+            <a href="{% url 'gastos' %}" class="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition">
+                ← Volver al Inicio
+            </a>
+        </div>
+    </div>
+</body>
+</html>

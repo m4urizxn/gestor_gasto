@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionar Estado - {{ persona_display }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen py-10 px-4">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Gestionar Gastos</h1>
+        <p class="text-center text-gray-500 mb-8">{{ persona_display }}</p>
+        
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            {% if gastos %}
+            <form method="POST">
+                {% csrf_token %}
+                
+                <!-- Leyenda -->
+                <div class="flex justify-center gap-6 mb-6 text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-green-500"></span>
+                        <span class="text-gray-600">Pagado</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
+                        <span class="text-gray-600">Falta Pagar</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                        <span class="text-gray-600">No se Pagó</span>
+                    </div>
+                </div>
+                
+                <div class="space-y-4">
+                    {% for gasto in gastos %}
+                    <div class="border rounded-lg p-4 bg-gray-50">
+                        <div class="flex justify-between items-start mb-3">
+                            <div>
+                                <span class="font-medium text-gray-800">{{ gasto.descripcion }}</span>
+                                {% if gasto.nota %}
+                                <p class="text-xs text-gray-400 italic mt-1">{{ gasto.nota }}</p>
+                                {% endif %}
+                            </div>
+                            <span class="text-gray-700 font-medium">
+                                {% if persona == 'papa' %}€{% else %}S/{% endif %} {{ gasto.monto|floatformat:2 }}
+                            </span>
+                        </div>
+                        <div class="flex gap-2">
+                            <label class="flex-1">
+                                <input type="radio" name="estado_{{ gasto.id }}" value="pagado" 
+                                    {% if gasto.estado == 'pagado' %}checked{% endif %}
+                                    class="hidden peer">
+                                <div class="text-center py-2 px-3 rounded-lg border-2 border-gray-200 cursor-pointer 
+                                    peer-checked:border-green-500 peer-checked:bg-green-50 peer-checked:text-green-700 
+                                    hover:bg-gray-100 transition text-sm">
+                                    ✓ Pagado
+                                </div>
+                            </label>
+                            <label class="flex-1">
+                                <input type="radio" name="estado_{{ gasto.id }}" value="falta" 
+                                    {% if gasto.estado == 'falta' %}checked{% endif %}
+                                    class="hidden peer">
+                                <div class="text-center py-2 px-3 rounded-lg border-2 border-gray-200 cursor-pointer 
+                                    peer-checked:border-yellow-500 peer-checked:bg-yellow-50 peer-checked:text-yellow-700 
+                                    hover:bg-gray-100 transition text-sm">
+                                    ⏳ Falta Pagar
+                                </div>
+                            </label>
+                            <label class="flex-1">
+                                <input type="radio" name="estado_{{ gasto.id }}" value="no_pago" 
+                                    {% if gasto.estado == 'no_pago' %}checked{% endif %}
+                                    class="hidden peer">
+                                <div class="text-center py-2 px-3 rounded-lg border-2 border-gray-200 cursor-pointer 
+                                    peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:text-red-700 
+                                    hover:bg-gray-100 transition text-sm">
+                                    ✗ No se Pagó
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Botones -->
+                <div class="flex gap-4 mt-6">
+                    <a href="{% url 'gastos' %}" 
+                        class="flex-1 text-center bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition">
+                        Cancelar
+                    </a>
+                    <button type="submit" 
+                        class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <p class="text-center text-gray-400 italic py-8">No hay gastos registrados para {{ persona_display }}</p>
+            <div class="text-center">
+                <a href="{% url 'gastos' %}" class="inline-block bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition">
+                    ← Volver al Inicio
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

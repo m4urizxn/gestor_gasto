@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eliminar Gasto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen py-10 px-4">
+    <div class="max-w-md mx-auto">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-8">Eliminar Gasto</h1>
+        
+        <div class="bg-white rounded-xl shadow-lg p-8">
+            <div class="text-center mb-6">
+                <div class="text-6xl mb-4">⚠️</div>
+                <p class="text-gray-700 text-lg">¿Estás seguro de eliminar este gasto?</p>
+            </div>
+            
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <p class="text-gray-600"><strong>Persona:</strong> {{ gasto.get_persona_display }}</p>
+                <p class="text-gray-600"><strong>Descripción:</strong> {{ gasto.descripcion }}</p>
+                <p class="text-gray-600"><strong>Monto:</strong> S/ {{ gasto.monto|floatformat:2 }}</p>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                <div class="flex gap-4">
+                    <a href="{% url 'gestionar_gasto' %}" 
+                        class="flex-1 text-center bg-gray-300 hover:bg-gray-400 text-gray-800 font-semibold py-3 px-6 rounded-lg transition">
+                        Cancelar
+                    </a>
+                    <button type="submit" 
+                        class="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-6 rounded-lg transition">
+                        Sí, Eliminar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
