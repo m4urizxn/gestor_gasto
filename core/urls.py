@@ -16,10 +16,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
 from gastos.views import (
     gastos_view, agregar_gasto_view, gestionar_gasto_view, 
     editar_gasto_view, eliminar_gasto_view, dinero_enviado_view, 
-    agregar_envio_view, vaciar_historial_view, gestionar_estado_view
+    agregar_envio_view, vaciar_historial_view, gestionar_estado_view,
+    dinero_afp_view, agregar_gasto_afp_view, editar_gasto_afp_view, eliminar_gasto_afp_view
 )
 
 urlpatterns = [
@@ -33,4 +36,11 @@ urlpatterns = [
     path('agregar-envio/', agregar_envio_view, name='agregar_envio'),
     path('vaciar-historial/', vaciar_historial_view, name='vaciar_historial'),
     path('gestionar-estado/<str:persona>/', gestionar_estado_view, name='gestionar_estado'),
+    path('dinero-afp/', dinero_afp_view, name='dinero_afp'),
+    path('agregar-gasto-afp/', agregar_gasto_afp_view, name='agregar_gasto_afp'),
+    path('editar-gasto-afp/<int:gasto_id>/', editar_gasto_afp_view, name='editar_gasto_afp'),
+    path('eliminar-gasto-afp/<int:gasto_id>/', eliminar_gasto_afp_view, name='eliminar_gasto_afp'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

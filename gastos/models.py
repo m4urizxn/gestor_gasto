@@ -39,3 +39,13 @@ class DineroEnviado(models.Model):
     
     def __str__(self):
         return f"{self.get_destino_display()} - €{self.monto_euros} (S/ {self.monto_soles})"
+
+
+class GastoAFP(models.Model):
+    descripcion = models.CharField(max_length=200, verbose_name="De qué es el gasto")
+    monto = models.DecimalField(max_digits=10, decimal_places=2)
+    comprobante = models.ImageField(upload_to='comprobantes_afp/', blank=True, null=True)
+    fecha = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.descripcion} - S/ {self.monto}"

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Sum
-from .models import Gasto, DineroEnviado
+from .models import Gasto, DineroEnviado, GastoAFP
 import json
 import urllib.request
 import urllib.error
@@ -188,3 +188,63 @@ def gestionar_estado_view(request, persona):
         'persona': persona,
         'persona_display': persona_display,
     })
+
+
+def dinero_afp_view(request):
+    MONTO_INICIAL_AFP = 5350
+    gastos_afp = GastoAFP.objects.all().order_by('-fecha')
+    total_gastado = gastos_afp.aggregate(Sum('monto'))['monto__sum'] or 0
+    monto_restante = MONTO_INICIAL_AFP - float(total_gastado)
+    
+    context = {
+        'monto_inicial': MONTO_INICIAL_AFP,
+        'gastos_afp': gastos_afp,
+        'total_gastado': total_gastado,
+        'monto_restante': monto_restante,
+    }
+    return render(request, 'dinero_afp.html', context)
+
+
+def agregar_gasto_afp_view(request):
+    if request.method == 'POST':
+        descripcion = request.POST.get('descripcion')
+        monto = request.POST.get('monto')
+        comprobante = request.FILES.get('comprobante')
+        
+        GastoAFP.objects.create(
+            descripcion=descripcion,
+            monto=monto,
+            comprobante=comprobante
+        )
+        return redirect('dinero_afp')
+    
+    return render(request, 'agregar_gasto_afp.html')
+
+
+def editar_gasto_afp_view(request, gasto_id):
+    gasto = get_object_or_404(GastoAFP, id=gasto_id)
+    
+    if request.method == 'POST':
+        gasto.descripcion = request.POST.get('descripcion')
+        gasto.monto = request.POST.get('monto')
+        
+        comprobante = request.FILES.get('comprobante')
+        if comprobante:
+            gasto.comprobante = comprobante
+        
+        gasto.save()
+        return redirect('dinero_afp')
+    
+    return render(request, 'editar_gasto_afp.html', {'gasto': gasto})
+
+
+def eliminar_gasto_afp_view(request, gasto_id):
+    gasto = get_object_or_404(GastoAFP, id=gasto_id)
+    
+    if request.method == 'POST':
+        if gasto.comprobante:
+            gasto.comprobante.delete()
+        gasto.delete()
+        return redirect('dinero_afp')
+    
+    return render(request, 'eliminar_gasto_afp.html', {'gasto': gasto})
